@@ -1,9 +1,8 @@
 package com.lws.latte.app;
 
 import android.content.Context;
-import android.media.JetPlayer;
 
-import java.util.WeakHashMap;
+import java.util.HashMap;
 
 /**
  * Created by Wenshan.Lu on 2017/12/19.
@@ -15,7 +14,11 @@ public final class Latte {
         return Configurator.getInstance();
     }
 
-    private static WeakHashMap<String, Object> getConfigurations() {
+    private static HashMap<String, Object> getConfigurations() {
         return Configurator.getInstance().getLatteConfigs();
+    }
+
+    public static Context getApplication() {
+        return (Context) getConfigurations().get(ConfigType.APPLICATION_CONTEXT.name());
     }
 }
