@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.lws.festec.example.MainActivity">
+    tools:context="com.lws.festec.example.ExampleActivity">
 
     <com.joanzapata.iconify.widget.IconTextView
         android:id="@+id/icon_test"
