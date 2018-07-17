@@ -1,9 +1,12 @@
 package com.lws.latte.net;
 
+import android.content.Context;
+
 import com.lws.latte.net.callback.IError;
 import com.lws.latte.net.callback.IFailure;
 import com.lws.latte.net.callback.IRequest;
 import com.lws.latte.net.callback.ISuccess;
+import com.lws.latte.ui.LoaderStyle;
 
 import java.util.Map;
 
@@ -19,6 +22,8 @@ public class RestClientBuilder {
     private IFailure mFailure;
     private IError mError;
     private RequestBody mBody;
+    private LoaderStyle mLoaderStyle;
+    private Context mContext;
 
     RestClientBuilder() {
 
@@ -64,8 +69,20 @@ public class RestClientBuilder {
         return this;
     }
 
+    public final RestClientBuilder loader(Context context, LoaderStyle loaderStyle) {
+        this.mContext = context;
+        this.mLoaderStyle = loaderStyle;
+        return this;
+    }
+
+    public final RestClientBuilder loader(Context context) {
+        this.mContext = context;
+        this.mLoaderStyle = LoaderStyle.BallClipRotatePulseIndicator;
+        return this;
+    }
+
     public final RestClient build() {
-        return new RestClient(mUrl, PARAMS, mRequest, mSuccess, mFailure, mError, mBody);
+        return new RestClient(mUrl, PARAMS, mRequest, mSuccess, mFailure, mError, mBody, mContext, mLoaderStyle);
     }
 
 }

@@ -1,10 +1,14 @@
 package com.lws.latte.net;
 
+import android.content.Context;
+
 import com.lws.latte.net.callback.IError;
 import com.lws.latte.net.callback.IFailure;
 import com.lws.latte.net.callback.IRequest;
 import com.lws.latte.net.callback.ISuccess;
 import com.lws.latte.net.callback.RequestCallbacks;
+import com.lws.latte.ui.LatteLoader;
+import com.lws.latte.ui.LoaderStyle;
 
 import java.util.Map;
 
@@ -24,8 +28,13 @@ public class RestClient {
     private final IFailure mFailure;
     private final IError mError;
     private final RequestBody mBody;
+    private final LoaderStyle mLoaderStyle;
+    private final Context mContext;
 
-    public RestClient(String url, Map<String, Object> params, IRequest request, ISuccess success, IFailure failure, IError error, RequestBody body) {
+    public RestClient(String url, Map<String, Object> params,
+                      IRequest request, ISuccess success,
+                      IFailure failure, IError error, RequestBody body,
+                      Context context, LoaderStyle loaderStyle) {
         this.mUrl = url;
         params.putAll(params);
         this.mRequest = request;
@@ -33,6 +42,8 @@ public class RestClient {
         this.mFailure = failure;
         this.mError = error;
         this.mBody = body;
+        this.mLoaderStyle = loaderStyle;
+        this.mContext = context;
     }
 
     public static RestClientBuilder builder() {
@@ -45,6 +56,10 @@ public class RestClient {
 
         if (mRequest != null) {
             mRequest.onRequestStart();
+        }
+
+        if (mLoaderStyle != null) {
+            LatteLoader.showLoading(mContext, mLoaderStyle);
         }
 
         switch (method) {
@@ -70,7 +85,7 @@ public class RestClient {
     }
 
     private Callback<String> getRequestCallbacks() {
-        return new RequestCallbacks(mRequest, mSuccess, mFailure, mError);
+        return new RequestCallbacks(mRequest, mSuccess, mFailure, mError, mLoaderStyle);
     }
 
     public final void get() {
