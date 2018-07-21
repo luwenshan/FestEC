@@ -8,6 +8,7 @@ import com.lws.latte.net.callback.IRequest;
 import com.lws.latte.net.callback.ISuccess;
 import com.lws.latte.ui.LoaderStyle;
 
+import java.io.File;
 import java.util.Map;
 
 import okhttp3.MediaType;
@@ -17,11 +18,15 @@ public class RestClientBuilder {
 
     private String mUrl;
     private static final Map<String, Object> PARAMS = RestCreator.getParams();
+    private String mDownloadDir;
+    private String mExtension;
+    private String mName;
     private IRequest mRequest;
     private ISuccess mSuccess;
     private IFailure mFailure;
     private IError mError;
     private RequestBody mBody;
+    private File mFile;
     private LoaderStyle mLoaderStyle;
     private Context mContext;
 
@@ -46,6 +51,31 @@ public class RestClientBuilder {
 
     public final RestClientBuilder raw(String raw) {
         this.mBody = RequestBody.create(MediaType.parse("application/json;charset=utf-8"), raw);
+        return this;
+    }
+
+    public final RestClientBuilder downloadDir(String downloadDir) {
+        this.mDownloadDir = downloadDir;
+        return this;
+    }
+
+    public final RestClientBuilder extension(String extension) {
+        this.mExtension = extension;
+        return this;
+    }
+
+    public final RestClientBuilder name(String name) {
+        this.mName = name;
+        return this;
+    }
+
+    public final RestClientBuilder file(File file) {
+        this.mFile = file;
+        return this;
+    }
+
+    public final RestClientBuilder file(String filePath) {
+        this.mFile = new File(filePath);
         return this;
     }
 
@@ -82,7 +112,8 @@ public class RestClientBuilder {
     }
 
     public final RestClient build() {
-        return new RestClient(mUrl, PARAMS, mRequest, mSuccess, mFailure, mError, mBody, mContext, mLoaderStyle);
+        return new RestClient(mUrl, PARAMS, mDownloadDir, mExtension, mName,
+                mRequest, mSuccess, mFailure, mError, mBody, mFile, mContext, mLoaderStyle);
     }
 
 }
