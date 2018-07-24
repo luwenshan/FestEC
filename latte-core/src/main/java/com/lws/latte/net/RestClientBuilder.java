@@ -54,7 +54,7 @@ public class RestClientBuilder {
         return this;
     }
 
-    public final RestClientBuilder downloadDir(String downloadDir) {
+    public final RestClientBuilder dir(String downloadDir) {
         this.mDownloadDir = downloadDir;
         return this;
     }

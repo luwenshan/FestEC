@@ -1,5 +1,7 @@
 package com.lws.latte.net.download;
 
+import android.os.AsyncTask;
+
 import com.lws.latte.net.RestCreator;
 import com.lws.latte.net.callback.IError;
 import com.lws.latte.net.callback.IFailure;
@@ -48,12 +50,30 @@ public class DownloadHandler {
                 .enqueue(new Callback<ResponseBody>() {
                     @Override
                     public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.isSuccessful()) {
+                            ResponseBody responseBody = response.body();
+                            SaveFileTask task = new SaveFileTask(mRequest, mSuccess);
+                            task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+                                    mDownloadDir, mExtension, responseBody, mName);
+                            // 这里一定要判断，否则文件可能下载不全
+                            if (task.isCancelled()) {
+                                if (mRequest != null) {
+                                    mRequest.onRequestEnd();
+                                }
+                            }
+                        } else {
+                            if (mError != null) {
+                                mError.onError(response.code(), response.message());
+                            }
+                        }
 
                     }
 
                     @Override
                     public void onFailure(Call<ResponseBody> call, Throwable t) {
-
+                        if (mFailure != null) {
+                            mFailure.onFailure();
+                        }
                     }
                 });
     }
