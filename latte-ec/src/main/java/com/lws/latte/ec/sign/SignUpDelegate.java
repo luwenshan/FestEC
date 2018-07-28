@@ -1,5 +1,6 @@
 package com.lws.latte.ec.sign;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
@@ -38,6 +39,16 @@ public class SignUpDelegate extends LatteDelegate {
     @BindView(R2.id.tv_link_sign_in)
     AppCompatTextView mTvLinkSignIn;
 
+    private ISignListener mSignListener;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof ISignListener) {
+            mSignListener = (ISignListener) activity;
+        }
+    }
+
     @Override
     public Object setLayout() {
         return R.layout.delegate_sign_up;
@@ -61,7 +72,7 @@ public class SignUpDelegate extends LatteDelegate {
                         @Override
                         public void onSuccess(String response) {
                             LatteLogger.json("USER_PROFILE", response);
-                            SignHandler.onSignUp(response);
+                            SignHandler.onSignUp(response, mSignListener);
                         }
                     })
                     .build()

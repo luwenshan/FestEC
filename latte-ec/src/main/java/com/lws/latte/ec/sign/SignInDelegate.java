@@ -15,6 +15,9 @@ import com.joanzapata.iconify.widget.IconTextView;
 import com.lws.latte.delegates.LatteDelegate;
 import com.lws.latte.ec.R;
 import com.lws.latte.ec.R2;
+import com.lws.latte.net.RestClient;
+import com.lws.latte.net.callback.ISuccess;
+import com.lws.latte.util.log.LatteLogger;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,6 +36,16 @@ public class SignInDelegate extends LatteDelegate {
     @BindView(R2.id.icon_sign_in_we_chat)
     IconTextView mIconWeChat;
 
+    private ISignListener mSignListener;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof ISignListener) {
+            mSignListener = (ISignListener) activity;
+        }
+    }
+
     @Override
     public Object setLayout() {
         return R.layout.delegate_sign_in;
@@ -46,7 +59,19 @@ public class SignInDelegate extends LatteDelegate {
     @OnClick(R2.id.btn_sign_in)
     void onClickSignIn() {
         if (checkForm()) {
-
+            RestClient.builder()
+                    .url("http://www.wanandroid.com/tools/mockapi/872/sign_up")
+                    .params("email", mEtEmail.getText().toString())
+                    .params("password", mEtPassword.getText().toString())
+                    .success(new ISuccess() {
+                        @Override
+                        public void onSuccess(String response) {
+                            LatteLogger.json("USER_PROFILE", response);
+                            SignHandler.onSignIn(response, mSignListener);
+                        }
+                    })
+                    .build()
+                    .get();
         }
     }
 

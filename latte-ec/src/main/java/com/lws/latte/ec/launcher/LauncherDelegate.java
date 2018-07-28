@@ -1,13 +1,18 @@
 package com.lws.latte.ec.launcher;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.AppCompatTextView;
 import android.view.View;
 
+import com.lws.latte.app.AccountManager;
+import com.lws.latte.app.IUserChecker;
 import com.lws.latte.delegates.LatteDelegate;
 import com.lws.latte.ec.R;
 import com.lws.latte.ec.R2;
+import com.lws.latte.ui.launcher.ILauncherListener;
+import com.lws.latte.ui.launcher.OnLauncherFinishTag;
 import com.lws.latte.util.storage.LattePreference;
 import com.lws.latte.util.timer.BaseTimerTask;
 import com.lws.latte.util.timer.ITimerListener;
@@ -31,6 +36,16 @@ public class LauncherDelegate extends LatteDelegate implements ITimerListener {
 
     private int mCount = 5;
 
+    private ILauncherListener mLauncherListener;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof ILauncherListener) {
+            mLauncherListener = (ILauncherListener) activity;
+        }
+    }
+
     private void initTimer() {
         mTimer = new Timer();
         final BaseTimerTask task = new BaseTimerTask(this);
@@ -49,10 +64,25 @@ public class LauncherDelegate extends LatteDelegate implements ITimerListener {
 
     private void checkIsShowScroll() {
         if (!LattePreference.getAppFlag("hasFirstLaunch")) {
+            // 首次启动
             start(new LauncheScrollDelegate(), SINGLETASK);
         } else {
             // 检查用户是否登录
+            AccountManager.checkAccount(new IUserChecker() {
+                @Override
+                public void onSignIn() {
+                    if (mLauncherListener != null) {
+                        mLauncherListener.onLauncherFinish(OnLauncherFinishTag.SIGNED);
+                    }
+                }
 
+                @Override
+                public void onNotSignIn() {
+                    if (mLauncherListener != null) {
+                        mLauncherListener.onLauncherFinish(OnLauncherFinishTag.NOT_SIGNED);
+                    }
+                }
+            });
         }
     }
 

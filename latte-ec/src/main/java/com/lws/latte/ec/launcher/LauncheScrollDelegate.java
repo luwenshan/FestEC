@@ -1,14 +1,19 @@
 package com.lws.latte.ec.launcher;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 
 import com.bigkoo.convenientbanner.ConvenientBanner;
 import com.bigkoo.convenientbanner.listener.OnItemClickListener;
+import com.lws.latte.app.AccountManager;
+import com.lws.latte.app.IUserChecker;
 import com.lws.latte.delegates.LatteDelegate;
 import com.lws.latte.ec.R;
+import com.lws.latte.ui.launcher.ILauncherListener;
 import com.lws.latte.ui.launcher.LauncherHolderCreator;
+import com.lws.latte.ui.launcher.OnLauncherFinishTag;
 import com.lws.latte.util.storage.LattePreference;
 
 import java.util.ArrayList;
@@ -18,6 +23,16 @@ public class LauncheScrollDelegate extends LatteDelegate implements OnItemClickL
 
     private ConvenientBanner<Integer> mBanner;
     private static final List<Integer> RES_IDS = new ArrayList<>();
+
+    private ILauncherListener mLauncherListener;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof ILauncherListener) {
+            mLauncherListener = (ILauncherListener) activity;
+        }
+    }
 
     @Override
     public Object setLayout() {
@@ -49,6 +64,21 @@ public class LauncheScrollDelegate extends LatteDelegate implements OnItemClickL
         if (position == RES_IDS.size() - 1) {
             LattePreference.setAppFlag("hasFirstLaunch", true);
             // 检查用户是否已经登录
+            AccountManager.checkAccount(new IUserChecker() {
+                @Override
+                public void onSignIn() {
+                    if (mLauncherListener != null) {
+                        mLauncherListener.onLauncherFinish(OnLauncherFinishTag.SIGNED);
+                    }
+                }
+
+                @Override
+                public void onNotSignIn() {
+                    if (mLauncherListener != null) {
+                        mLauncherListener.onLauncherFinish(OnLauncherFinishTag.NOT_SIGNED);
+                    }
+                }
+            });
         }
     }
 }
