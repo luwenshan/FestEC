@@ -15,6 +15,7 @@ import com.lws.latte.ec.R;
 import com.lws.latte.ec.R2;
 import com.lws.latte.net.RestClient;
 import com.lws.latte.net.callback.ISuccess;
+import com.lws.latte.util.log.LatteLogger;
 
 import butterknife.BindView;
 import butterknife.OnClick;
@@ -50,17 +51,21 @@ public class SignUpDelegate extends LatteDelegate {
     @OnClick(R2.id.btn_sign_up)
     public void onClickSignUp() {
         if (checkForm()) {
-//            RestClient.builder()
-//                    .url("sign_up")
-//                    .params("", "")
-//                    .success(new ISuccess() {
-//                        @Override
-//                        public void onSuccess(String response) {
-//
-//                        }
-//                    })
-//                    .build()
-//                    .post();
+            RestClient.builder()
+                    .url("http://www.wanandroid.com/tools/mockapi/872/sign_up")
+//                    .params("name", mEtName.getText().toString())
+//                    .params("email", mEtEmail.getText().toString())
+//                    .params("phone", mEtPhone.getText().toString())
+//                    .params("password", mEtPassword.getText().toString())
+                    .success(new ISuccess() {
+                        @Override
+                        public void onSuccess(String response) {
+                            LatteLogger.json("USER_PROFILE", response);
+                            SignHandler.onSignUp(response);
+                        }
+                    })
+                    .build()
+                    .get();
             Toast.makeText(getContext(), "验证通过", Toast.LENGTH_SHORT).show();
         }
     }

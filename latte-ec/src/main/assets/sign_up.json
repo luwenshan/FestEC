@@ -1,0 +1,11 @@
+{
+"code":0,
+"message":"OK",
+"data":{
+"userId":1,
+"name":"程序猿",
+"avatar":"https://img2.woyaogexing.com/2018/07/26/312e759c579942ffb98fa02d077a1e4c!400x400.jpeg",
+"gender":"男",
+"address":"武汉"
+}
+}
